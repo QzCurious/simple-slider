@@ -1,53 +1,51 @@
-class Slider {
-    constructor($slide) {
-        self = this;
+let $next = document.querySelector(".slider__next");
+let $prev = document.querySelector(".slider__prev");
+let $container = document.querySelector(".slider__container");
+let num_of_slides = $container.querySelectorAll(".slider__slide").length;
+let $indexes = document.querySelectorAll(".slider__index-container .slider__index");
 
-        // elements
-        self.$root = $slide;
-        self.$prev = $slide.querySelector(".slider__prev");
-        self.$next = $slide.querySelector(".slider__next");
-        self.$indexContainer = $slide.querySelector(".slider__index-container");
-        self.$indexes = [...$slide.querySelectorAll(".slider__index")];
-        self.$slideContainer = $slide.querySelector(".slider__container");
-        self.$slides = [...$slide.querySelectorAll(".slider__slide")];
-
-        // states
-        self.index = self.$indexes.indexOf(self.$indexContainer.querySelector(".slider__index--active"));
-        self.count = self.$slides.length;
-
-        for (let i = 0; i < self.count; ++i) {
-            self.$indexes[i].dataset.index = i;
-        }
-
-        // hook events
-        self.$prev.addEventListener("click", () => {
-            self.setIndex(self.index - 1);
-        });
-
-        self.$next.addEventListener("click", () => {
-            self.setIndex(self.index + 1);
-        });
-
-        for (const $e of self.$indexes) {
-            $e.addEventListener("click", function () {
-                self.setIndex(this.dataset.index);
-            });
-        }
-    }
-
-    setIndex(index) {
-        if (index < 0) self.index = 0;
-        else if (index > self.count - 1) self.index = self.count - 1;
-        else self.index = index;
-
-        for (const $e of self.$indexes) {
-            $e.classList.remove("slider__index--active");
-        }
-        self.$root.style.setProperty("--index", self.index);
-        self.$indexes[self.index].classList.add("slider__index--active");
-    }
+for (let i = 0; i < $indexes.length; ++i) {
+    $indexes[i].dataset.index = i + 1;
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    let slider = new Slider(document.querySelector(".slider"));
+for (let i = 0; i < $indexes.length; ++i) {
+    $indexes[i].addEventListener("click", function (e) {
+        // clear active states
+        for (let i = 0; i < $indexes.length; ++i) {
+            $indexes[i].classList.remove("slider__index--active");
+        }
+
+        $container.style.marginLeft = (parseInt(e.target.dataset.index) - 1) * -480 + `px`;
+        e.target.classList.add("slider__index--active");
+    });
+}
+
+$next.addEventListener("click", function () {
+    let currentMargin = parseInt($container.style.marginLeft);
+    if (Number.isNaN(currentMargin)) currentMargin = 0;
+
+    console.log(currentMargin);
+    console.log(-480 * (num_of_slides - 1));
+
+    // if lastest, don't push
+    // margin * (num_of_slides-1)
+    if (currentMargin == -480 * (num_of_slides - 1)) return;
+
+    // push to left
+    $container.style.marginLeft = currentMargin - 480 + `px`;
+});
+
+$prev.addEventListener("click", function () {
+    let currentMargin = parseInt($container.style.marginLeft);
+    if (Number.isNaN(currentMargin)) currentMargin = 0;
+
+    console.log(currentMargin);
+    console.log(480 * (num_of_slides - 1));
+
+    // if first, don't push
+    // first margin 0
+    if (currentMargin == 0) return;
+
+    // push to right
+    $container.style.marginLeft = currentMargin + 480 + `px`;
 });
